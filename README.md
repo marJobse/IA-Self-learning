@@ -10,7 +10,13 @@
 
 ---
 
-## 🚀 Descripción
+# 🌐 Demo Online
+
+## 👉 [https://ia-self-learning.vercel.app/](https://ia-self-learning.vercel.app/)
+
+---
+
+# 🚀 Descripción
 
 IA Pro 2026 es una plataforma educativa interactiva construida como entorno de estudio autodidacta profesional para aprender:
 
@@ -30,9 +36,9 @@ El objetivo es ofrecer una experiencia equivalente o superior a formaciones prem
 
 ---
 
-## ✨ Funcionalidades
+# ✨ Funcionalidades
 
-### 📚 Plataforma educativa completa
+## 📚 Plataforma educativa completa
 
 * Roadmap estructurado por módulos
 * Unidades progresivas
@@ -41,16 +47,23 @@ El objetivo es ofrecer una experiencia equivalente o superior a formaciones prem
 * Notas personales
 * Recursos externos curados
 * Proyectos integradores
+* Dashboard de avance
+* Persistencia local automática
 
-### 🧠 Aprendizaje práctico
+---
+
+## 🧠 Aprendizaje práctico
 
 * Ejercicios hands-on
 * Casos reales
 * Automatizaciones aplicadas
 * Integraciones con APIs
 * Agentes IA funcionales
+* Arquitecturas modernas de workflows
 
-### 💾 Persistencia local
+---
+
+## 💾 Persistencia local
 
 La plataforma guarda automáticamente:
 
@@ -63,7 +76,7 @@ utilizando `localStorage`.
 
 ---
 
-## 🛠️ Stack Tecnológico
+# 🛠️ Stack Tecnológico
 
 * HTML5
 * CSS3
@@ -71,13 +84,14 @@ utilizando `localStorage`.
 * Babel Standalone
 * LocalStorage API
 * Tabler Icons
+* Vercel Deploy
 
 ---
 
-## 📂 Estructura del proyecto
+# 📂 Estructura del proyecto
 
 ```bash
-ia-pro-2026/
+IA-Self-learning/
 │
 ├── index.html
 ├── README.md
@@ -86,19 +100,26 @@ ia-pro-2026/
 
 ---
 
-## 📸 Vista previa
+# 📸 Vista previa
 
-> Próximamente screenshots y demo pública.
+## Dashboard principal
+
+* seguimiento de progreso
+* módulos
+* roadmap
+* favoritos
+* notas personales
+
+## Módulos interactivos
+
+* recursos externos
+* ejercicios prácticos
+* proyectos integradores
+* tracking de avance
 
 ---
 
-## 🌐 Demo Online
-
-🔗 Próximamente deploy en Vercel.
-
----
-
-## 📖 Contenido del roadmap
+# 📖 Contenido del roadmap
 
 La plataforma incluye módulos como:
 
@@ -114,7 +135,7 @@ La plataforma incluye módulos como:
 
 ---
 
-## 🎯 Objetivo del proyecto
+# 🎯 Objetivo del proyecto
 
 Construir una plataforma seria de formación y experimentación en IA aplicada, enfocada en productividad real y automatización profesional.
 
@@ -128,24 +149,17 @@ Especialmente orientada a:
 
 ---
 
-## 🚀 Deploy en Vercel
+# 🚀 Deploy
 
-Este proyecto puede desplegarse fácilmente con:
+El proyecto está desplegado en:
 
-* [Vercel](https://vercel.com?utm_source=chatgpt.com)
-* [Netlify](https://www.netlify.com?utm_source=chatgpt.com)
+## Vercel
 
-### Deploy rápido
-
-```bash
-1. Fork / Clone repo
-2. Importar en Vercel
-3. Deploy
-```
+[https://ia-self-learning.vercel.app/](https://ia-self-learning.vercel.app/)
 
 ---
 
-## 🔮 Roadmap futuro
+# 🔮 Roadmap futuro
 
 * [ ] Backend propio
 * [ ] Autenticación
@@ -160,10 +174,30 @@ Este proyecto puede desplegarse fácilmente con:
 * [ ] PWA instalable
 * [ ] Marketplace de prompts
 * [ ] Sistema de certificaciones
+* [ ] Modo colaborativo
+* [ ] Integración con OpenAI / Claude APIs
+* [ ] Seguimiento de objetivos de aprendizaje
+* [ ] Analytics personales
 
 ---
 
-## 🤝 Contribuciones
+# ⚡ Instalación local
+
+```bash
+git clone https://github.com/marJobse/IA-Self-learning.git
+```
+
+Abrir:
+
+```bash
+index.html
+```
+
+en el navegador.
+
+---
+
+# 🤝 Contribuciones
 
 Actualmente es un proyecto personal de exploración y aprendizaje.
 
@@ -171,21 +205,28 @@ Las ideas, mejoras y sugerencias son bienvenidas.
 
 ---
 
-## 📜 Licencia
+# 📜 Licencia
 
 MIT License
 
 ---
 
-## 👩‍💻 Autor
+# 👩‍💻 Autor
 
 Desarrollado por Mariana
 Contadora Pública · Analista Programadora Universitaria
-Enfocada en IA aplicada, automatización y productividad.
+
+Enfocada en:
+
+* IA aplicada
+* automatización
+* productividad
+* sistemas inteligentes
+* workflows modernos
 
 ---
 
-## ⭐ Inspiración
+# ⭐ Inspiración
 
 Este proyecto nace de la idea de transformar el aprendizaje de IA en una experiencia:
 
