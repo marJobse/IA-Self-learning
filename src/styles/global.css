@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f12;
+    --bg2: #13161b;
+    --bg3: #1a1e25;
+    --bg4: #20252e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8eaf0;
+    --text2: #8b95a8;
+    --text3: #5a6478;
+    --accent: #6ee7b7;
+    --accent2: #34d399;
+    --accent3: #059669;
+    --purple: #a78bfa;
+    --purple2: #7c3aed;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --font: 'Sora', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Fraunces', serif;
+    --radius: 10px;
+    --radius2: 16px;
+    --sidebar: 260px;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.6; }
+  #root { height: 100%; display: flex; flex-direction: column; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 99px; }
+
+  button { cursor: pointer; font-family: var(--font); border: none; background: none; color: inherit; }
+  input, textarea { font-family: var(--font); }
+
+  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; }
+  .tag-green { background: rgba(110,231,183,0.12); color: var(--accent); }
+  .tag-purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+  .tag-amber { background: rgba(251,191,36,0.12); color: var(--amber); }
+  .tag-red { background: rgba(248,113,113,0.12); color: var(--red); }
+  .tag-blue { background: rgba(96,165,250,0.12); color: var(--blue); }
+  .tag-gray { background: rgba(255,255,255,0.07); color: var(--text2); }
+
+  .progress-bar { height: 4px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent)); border-radius: 99px; transition: width 0.5s ease; }
+
+  .btn-primary { background: var(--accent3); color: #000; font-weight: 600; padding: 7px 16px; border-radius: var(--radius); font-size: 13px; transition: all 0.15s; cursor: pointer; border: none; font-family: var(--font); }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); padding: 6px 14px; border-radius: var(--radius); font-size: 13px; transition: all 0.15s; cursor: pointer; font-family: var(--font); }
+  .btn-ghost:hover { border-color: var(--accent3); color: var(--accent); background: rgba(110,231,183,0.05); }
+
+  .checkbox { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+  .checkbox.done { background: var(--accent3); border-color: var(--accent3); }
+  .checkbox.done::after { content: '✓'; color: #000; font-size: 11px; font-weight: 700; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 20px; }
+  .card:hover { border-color: var(--border2); }
+
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
