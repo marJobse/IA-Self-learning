@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA Pro 2026 – Plataforma de Estudio</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f12;
+    --bg2: #13161b;
+    --bg3: #1a1e25;
+    --bg4: #20252e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8eaf0;
+    --text2: #8b95a8;
+    --text3: #5a6478;
+    --accent: #6ee7b7;
+    --accent2: #34d399;
+    --accent3: #059669;
+    --purple: #a78bfa;
+    --purple2: #7c3aed;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --font: 'Sora', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Fraunces', serif;
+    --radius: 10px;
+    --radius2: 16px;
+    --sidebar: 260px;
+  }
+
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.6; }
+  #root { height: 100%; display: flex; flex-direction: column; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 99px; }
+
+  button { cursor: pointer; font-family: var(--font); border: none; background: none; color: inherit; }
+  input, textarea { font-family: var(--font); }
+
+  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; }
+  .tag-green { background: rgba(110,231,183,0.12); color: var(--accent); }
+  .tag-purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+  .tag-amber { background: rgba(251,191,36,0.12); color: var(--amber); }
+  .tag-red { background: rgba(248,113,113,0.12); color: var(--red); }
+  .tag-blue { background: rgba(96,165,250,0.12); color: var(--blue); }
+  .tag-gray { background: rgba(255,255,255,0.07); color: var(--text2); }
+
+  .progress-bar { height: 4px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent)); border-radius: 99px; transition: width 0.5s ease; }
+
+  .btn-primary { background: var(--accent3); color: #000; font-weight: 600; padding: 7px 16px; border-radius: var(--radius); font-size: 13px; transition: all 0.15s; cursor: pointer; border: none; font-family: var(--font); }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); padding: 6px 14px; border-radius: var(--radius); font-size: 13px; transition: all 0.15s; cursor: pointer; font-family: var(--font); }
+  .btn-ghost:hover { border-color: var(--accent3); color: var(--accent); background: rgba(110,231,183,0.05); }
+
+  .checkbox { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+  .checkbox.done { background: var(--accent3); border-color: var(--accent3); }
+  .checkbox.done::after { content: '✓'; color: #000; font-size: 11px; font-weight: 700; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 20px; }
+  .card:hover { border-color: var(--border2); }
+
+  .fade-in { animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+const MODULES = [
+  {
+    id: 1, icon: "ti-brain", color: "tag-blue",
+    title: "Fundamentos de IA Generativa",
+    hours: 8, level: "Inicial",
+    desc: "Comprende cómo funciona la IA moderna, LLMs y el ecosistema actual.",
+    units: [
+      { id: "1-1", title: "¿Qué son los LLMs y cómo funcionan?", type: "obligatorio", time: 60,
+        resources: [
+          { type: "video", label: "Andrej Karpathy – Intro to LLMs", url: "https://www.youtube.com/watch?v=zjkBMFhNj_g" },
+          { type: "doc", label: "Anthropic: Claude Overview", url: "https://docs.anthropic.com" },
+          { type: "blog", label: "What Are LLMs? – Stephen Wolfram", url: "https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/" }
+        ],
+        practice: "Explorá ChatGPT, Claude y Gemini. Compará respuestas a la misma pregunta técnica.",
+        goal: "Entender tokens, contexto, temperatura y modelos de fundamento."
+      },
+      { id: "1-2", title: "Ecosistema IA 2025: Modelos y proveedores", type: "obligatorio", time: 45,
+        resources: [
+          { type: "video", label: "IA landscape 2025 – Fireship", url: "https://www.youtube.com/watch?v=aircAruvnKk" },
+          { type: "blog", label: "State of AI Report 2024", url: "https://www.stateof.ai/" }
+        ],
+        practice: "Crear tabla comparativa: GPT-4o vs Claude 3.5 vs Gemini 2 – precios, límites, capacidades.",
+        goal: "Saber elegir el modelo correcto según caso de uso y costo."
+      },
+      { id: "1-3", title: "APIs de IA: Conceptos clave", type: "obligatorio", time: 60,
+        resources: [
+          { type: "doc", label: "OpenAI API Docs", url: "https://platform.openai.com/docs" },
+          { type: "doc", label: "Anthropic API Docs", url: "https://docs.anthropic.com/en/api/getting-started" },
+          { type: "video", label: "APIs para principiantes – Fireship", url: "https://www.youtube.com/watch?v=GZvSYJDk-us" }
+        ],
+        practice: "Hacer tu primera llamada a la API de OpenAI o Claude con Postman o curl.",
+        goal: "Llamar a una API de IA, entender requests/responses y autenticación."
+      },
+    ],
+    project: { title: "Comparativa de modelos IA", desc: "Creá un documento profesional comparando 3 modelos en 5 casos de uso contables/administrativos.", tech: ["ChatGPT", "Claude", "Notion/Docs"] }
+  },
+  {
+    id: 2, icon: "ti-message-chatbot", color: "tag-purple",
+    title: "Prompt Engineering Profesional",
+    hours: 12, level: "Inicial-Medio",
+    desc: "Dominar el arte de comunicarse con la IA para obtener resultados confiables y reproducibles.",
+    units: [
+      { id: "2-1", title: "Principios del prompting efectivo", type: "obligatorio", time: 90,
+        resources: [
+          { type: "doc", label: "Prompt Engineering Guide", url: "https://www.promptingguide.ai/es" },
+          { type: "doc", label: "Anthropic Prompting Guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" },
+          { type: "video", label: "Prompt Engineering – Andrew Ng (DeepLearning.AI)", url: "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/" }
+        ],
+        practice: "Reescribir 5 prompts malos usando la técnica RTF (Rol, Tarea, Formato).",
+        goal: "Producir outputs consistentes usando estructura y contexto claro."
+      },
+      { id: "2-2", title: "Técnicas avanzadas: CoT, Few-shot, RAG básico", type: "obligatorio", time: 90,
+        resources: [
+          { type: "blog", label: "Chain-of-Thought Prompting", url: "https://learnprompting.org/docs/intermediate/chain_of_thought" },
+          { type: "video", label: "RAG en 5 minutos", url: "https://www.youtube.com/watch?v=T-D1OfcDW1M" }
+        ],
+        practice: "Aplicar CoT para que Claude resuelva un análisis contable paso a paso.",
+        goal: "Usar prompts que guíen el razonamiento del modelo."
+      },
+      { id: "2-3", title: "Prompt templates para uso profesional", type: "obligatorio", time: 60,
+        resources: [
+          { type: "github", label: "Awesome Prompts Library", url: "https://github.com/f/awesome-chatgpt-prompts" },
+          { type: "blog", label: "Prompts para productividad – Lenny's Newsletter", url: "https://www.lennysnewsletter.com/p/i-tried-dozens-of-ai-productivity" }
+        ],
+        practice: "Construir tu biblioteca personal de 10 prompts reutilizables para tu trabajo.",
+        goal: "Tener un sistema de prompts personales listos para usar."
+      },
+      { id: "2-4", title: "Evaluación y testing de prompts", type: "opcional", time: 60,
+        resources: [
+          { type: "doc", label: "Claude Prompt Evaluations", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/eval-tool" }
+        ],
+        practice: "Crear un mini-benchmark: correr el mismo prompt en 3 modelos y evaluar calidad.",
+        goal: "Medir y mejorar prompts sistemáticamente."
+      },
+    ],
+    project: { title: "Biblioteca de Prompts Profesionales", desc: "Sistema de 20+ prompts organizados por área (contabilidad, administración, análisis) con variables y ejemplos de output.", tech: ["Notion", "Claude", "Google Docs"] }
+  },
+  {
+    id: 3, icon: "ti-robot", color: "tag-amber",
+    title: "GPTs y Asistentes Personalizados",
+    hours: 10, level: "Medio",
+    desc: "Crear asistentes IA especializados para casos de uso específicos.",
+    units: [
+      { id: "3-1", title: "Crear GPTs personalizados en ChatGPT", type: "obligatorio", time: 90,
+        resources: [
+          { type: "video", label: "Create a Custom GPT – Official Tutorial", url: "https://www.youtube.com/watch?v=pQ34prQuKCQ" },
+          { type: "doc", label: "OpenAI GPT Builder Docs", url: "https://help.openai.com/en/articles/8554397-creating-a-gpt" }
+        ],
+        practice: "Crear un GPT especializado en liquidación de sueldos y consultas laborales argentinas.",
+        goal: "Publicar un GPT funcional con instrucciones, conocimiento y comportamiento definido."
+      },
+      { id: "3-2", title: "Claude Projects – Contexto persistente", type: "obligatorio", time: 60,
+        resources: [
+          { type: "doc", label: "Claude Projects Overview", url: "https://support.anthropic.com/en/articles/9517075-what-are-projects" },
+          { type: "video", label: "Claude Projects in Practice", url: "https://www.youtube.com/watch?v=UHBfGbGOeSI" }
+        ],
+        practice: "Crear un Proyecto Claude con contexto de tu empresa y documentos internos.",
+        goal: "Asistente que conoce tu empresa, clientes y procedimientos."
+      },
+      { id: "3-3", title: "System prompts y personalización avanzada", type: "obligatorio", time: 90,
+        resources: [
+          { type: "doc", label: "Anthropic System Prompts Guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/system-prompts" },
+          { type: "github", label: "System Prompt Examples", url: "https://github.com/spdustin/ChatGPT-AutoExpert" }
+        ],
+        practice: "Diseñar un system prompt completo para un asistente contable.",
+        goal: "Asistente con personalidad, reglas de negocio y límites definidos."
+      },
+    ],
+    project: { title: "Asistente Contable/Admin con IA", desc: "GPT o Claude Project especializado en tu área: responde consultas, genera documentos, conoce la normativa vigente.", tech: ["ChatGPT Plus", "Claude Pro", "Documentos propios"] }
+  },
+  {
+    id: 4, icon: "ti-plug-connected", color: "tag-green",
+    title: "APIs, Webhooks e Integraciones",
+    hours: 15, level: "Medio",
+    desc: "Conectar servicios y automatizar flujos de datos entre aplicaciones.",
+    units: [
+      { id: "4-1", title: "HTTP, REST APIs: repaso práctico", type: "obligatorio", time: 90,
+        resources: [
+          { type: "video", label: "APIs explicadas en 10 min", url: "https://www.youtube.com/watch?v=ByGJQzlzxQg" },
+          { type: "doc", label: "Postman Learning Center", url: "https://learning.postman.com/docs/getting-started/first-steps/overview/" }
+        ],
+        practice: "Usar Postman para consumir 3 APIs: JSONPlaceholder, OpenWeather, y una API de IA.",
+        goal: "Hacer llamadas GET, POST con headers y body correctos."
+      },
+      { id: "4-2", title: "Webhooks: eventos en tiempo real", type: "obligatorio", time: 90,
+        resources: [
+          { type: "video", label: "Webhooks explained – Fireship", url: "https://www.youtube.com/watch?v=mrkQ5iLb4DM" },
+          { type: "doc", label: "Webhook.site – Testing", url: "https://webhook.site" }
+        ],
+        practice: "Configurar un webhook con webhook.site y conectarlo a un formulario de Google Forms.",
+        goal: "Recibir y procesar datos de eventos externos."
+      },
+      { id: "4-3", title: "Autenticación: API Keys, OAuth, JWT", type: "obligatorio", time: 60,
+        resources: [
+          { type: "video", label: "OAuth 2.0 explained simply", url: "https://www.youtube.com/watch?v=996OiexHze0" }
+        ],
+        practice: "Conectar la API de Gmail o Google Sheets usando OAuth2.",
+        goal: "Autenticar servicios reales de forma segura."
+      },
+      { id: "4-4", title: "Google Sheets como base de datos liviana", type: "obligatorio", time: 60,
+        resources: [
+          { type: "doc", label: "Google Sheets API v4 Docs", url: "https://developers.google.com/sheets/api/guides/concepts" },
+          { type: "video", label: "Sheets + API en Make/n8n", url: "https://www.youtube.com/watch?v=EzO5OD_wyhk" }
+        ],
+        practice: "Crear un CRUD completo leyendo y escribiendo Google Sheets con la API.",
+        goal: "Usar Sheets como BD gratuita para tus automatizaciones."
+      },
+    ],
+    project: { title: "Hub de APIs propio", desc: "Integración funcional: formulario web → webhook → procesamiento con IA → resultado en Google Sheets + email.", tech: ["Postman", "Google Sheets API", "OpenAI API", "webhook.site"] }
+  },
+  {
+    id: 5, icon: "ti-circuit-switchboard", color: "tag-blue",
+    title: "Automatización No-Code con Make",
+    hours: 20, level: "Medio",
+    desc: "Construir flujos automatizados complejos sin escribir código usando Make (Integromat).",
+    units: [
+      { id: "5-1", title: "Introducción a Make – Conceptos base", type: "obligatorio", time: 90,
+        resources: [
+          { type: "video", label: "Make.com Crash Course 2025", url: "https://www.youtube.com/watch?v=vZJvI3EEG_k" },
+          { type: "doc", label: "Make Academy (gratuita)", url: "https://academy.make.com" }
+        ],
+        practice: "Crear tu primer scenario: Google Form → Gmail con datos del formulario.",
+        goal: "Entender scenarios, módulos, triggers y operaciones."
+      },
+      { id: "5-2", title: "Filtros, routers y manejo de errores", type: "obligatorio", time: 120,
+        resources: [
+          { type: "video", label: "Make Advanced Routing", url: "https://www.youtube.com/watch?v=LMSx1VRx2yA" },
+          { type: "doc", label: "Make Error Handling Docs", url: "https://www.make.com/en/help/errors/error-handling-in-make" }
+        ],
+        practice: "Crear scenario con router: si el cliente es VIP → proceso A, sino → proceso B.",
+        goal: "Automatizaciones robustas con lógica condicional."
+      },
+      { id: "5-3", title: "Iteradores, agregadores y arrays", type: "obligatorio", time: 120,
+        resources: [
+          { type: "video", label: "Arrays e Iteradores en Make", url: "https://www.youtube.com/watch?v=Cj3FMQH2oC0" }
+        ],
+        practice: "Procesar una lista de facturas desde Sheets, iterar y enviar email por cada una.",
+        goal: "Procesar listas y colecciones de datos automáticamente."
+      },
+      { id: "5-4", title: "Make + IA: OpenAI y Claude en flujos", type: "obligatorio", time: 120,
+        resources: [
+          { type: "video", label: "Make + ChatGPT Integration", url: "https://www.youtube.com/watch?v=v3vbZE4XRPI" },
+          { type: "doc", label: "Make OpenAI Module Docs", url: "https://www.make.com/en/integrations/openai" }
+        ],
+        practice: "Automatización: email de cliente → IA clasifica intención → respuesta automática.",
+        goal: "Enriquecer flujos con inteligencia artificial."
+      },
+      { id: "5-5", title: "Casos reales: reportes, emails, PDFs", type: "obligatorio", time: 150,
+        resources: [
+          { type: "video", label: "Generate PDF with Make", url: "https://www.youtube.com/watch?v=b4Kn_YDXK-0" }
+        ],
+        practice: "Flujo completo: datos de Sheets → IA genera análisis → PDF → email al cliente.",
+        goal: "Automatizaciones end-to-end con valor de negocio real."
+      },
+    ],
+    project: { title: "Sistema de Reportes Automáticos con IA", desc: "Make scenario que procesa datos contables, genera análisis con IA, crea PDF y envía por email a clientes. Trigger semanal automático.", tech: ["Make.com", "Google Sheets", "OpenAI API", "Gmail", "PDF.co o similares"] }
+  },
+  {
+    id: 6, icon: "ti-topology-star-3", color: "tag-purple",
+    title: "n8n – Automatización Open Source",
+    hours: 20, level: "Medio-Avanzado",
+    desc: "Dominar n8n para automatizaciones avanzadas con mayor control y sin límites de operaciones.",
+    units: [
+      { id: "6-1", title: "n8n setup y primeros workflows", type: "obligatorio", time: 120,
+        resources: [
+          { type: "video", label: "n8n Full Tutorial 2025", url: "https://www.youtube.com/watch?v=1MwSoB0gnM4" },
+          { type: "doc", label: "n8n Docs – Getting Started", url: "https://docs.n8n.io/try-it-out/" },
+          { type: "doc", label: "n8n Cloud (gratuito)", url: "https://n8n.io/cloud/" }
+        ],
+        practice: "Instalar n8n (cloud gratuito o local con Docker) y crear tu primer workflow.",
+        goal: "Ambiente funcional de n8n y comprensión del canvas."
+      },
+      { id: "6-2", title: "Nodos clave: HTTP, Webhooks, Code", type: "obligatorio", time: 150,
+        resources: [
+          { type: "doc", label: "n8n HTTP Request Node", url: "https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/" },
+          { type: "video", label: "n8n Code Node Tutorial", url: "https://www.youtube.com/watch?v=mPCJFqzgIk0" }
+        ],
+        practice: "Crear workflow con HTTP node que consume una API externa y transforma datos con Code node.",
+        goal: "Usar JavaScript dentro de n8n para transformaciones complejas."
+      },
+      { id: "6-3", title: "n8n + LLMs: OpenAI, Claude, Gemini", type: "obligatorio", time: 120,
+        resources: [
+          { type: "doc", label: "n8n AI Nodes Docs", url: "https://docs.n8n.io/advanced-ai/" },
+          { type: "video", label: "n8n + AI Agents Tutorial", url: "https://www.youtube.com/watch?v=BSPnVpbPpho" }
+        ],
+        practice: "Workflow: recibe texto, lo envía a Claude, extrae entidades, guarda en Sheets.",
+        goal: "Integrar múltiples modelos IA en un mismo workflow."
+      },
+      { id: "6-4", title: "Sub-workflows y modularidad", type: "obligatorio", time: 90,
+        resources: [
+          { type: "doc", label: "n8n Sub-workflows", url: "https://docs.n8n.io/flow-logic/subworkflows/" }
+        ],
+        practice: "Refactorizar un workflow grande en 3 sub-workflows reutilizables.",
+        goal: "Arquitectura escalable de automatizaciones."
+      },
+      { id: "6-5", title: "n8n self-hosted en VPS", type: "opcional", time: 120,
+        resources: [
+          { type: "video", label: "n8n Self-Hosted with Docker", url: "https://www.youtube.com/watch?v=1MwSoB0gnM4" },
+          { type: "doc", label: "Railway o Render – Deploy gratis", url: "https://railway.app" }
+        ],
+        practice: "Deploy de n8n en Railway o Render con dominio propio.",
+        goal: "Automatizaciones sin límites en tu propio servidor."
+      },
+    ],
+    project: { title: "Pipeline de Datos con IA en n8n", desc: "Workflow que ingiere datos de múltiples fuentes, los procesa con IA, genera reportes y distribuye a stakeholders. Completamente automatizado.", tech: ["n8n", "OpenAI/Claude API", "Google Sheets", "Airtable", "Gmail/Telegram"] }
+  },
+  {
+    id: 7, icon: "ti-arrows-transfer-down", color: "tag-amber",
+    title: "Agentes IA y Workflows Autónomos",
+    hours: 18, level: "Avanzado",
+    desc: "Crear sistemas de agentes IA que planifican y ejecutan tareas complejas de forma autónoma.",
+    units: [
+      { id: "7-1", title: "Qué son los agentes IA y cómo funcionan", type: "obligatorio", time: 90,
+        resources: [
+          { type: "video", label: "AI Agents Explained – Anthropic", url: "https://www.youtube.com/watch?v=F_hJ2Ey4BNc" },
+          { type: "doc", label: "Anthropic Agents Guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/agents" },
+          { type: "blog", label: "ReAct Pattern para agentes", url: "https://react-lm.github.io/" }
+        ],
+        practice: "Diseñar en papel el flujo de decisiones de un agente para automatizar un proceso de tu trabajo.",
+        goal: "Comprender loop de agentes: percepción → razonamiento → acción."
+      },
+      { id: "7-2", title: "Tools/Function Calling en APIs de IA", type: "obligatorio", time: 120,
+        resources: [
+          { type: "doc", label: "OpenAI Function Calling", url: "https://platform.openai.com/docs/guides/function-calling" },
+          { type: "doc", label: "Anthropic Tool Use", url: "https://docs.anthropic.com/en/docs/build-with-claude/tool-use" },
+          { type: "video", label: "Tool Use con Claude", url: "https://www.youtube.com/watch?v=Bpg3X8Pv7kU" }
+        ],
+        practice: "Crear un agente simple que puede buscar en Sheets, enviar emails y crear documentos.",
+        goal: "Agente con herramientas reales que interactúa con el mundo."
+      },
+      { id: "7-3", title: "Agentes con n8n: AI Agent Node", type: "obligatorio", time: 150,
+        resources: [
+          { type: "doc", label: "n8n AI Agent Node", url: "https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/" },
+          { type: "video", label: "n8n AI Agent Tutorial Completo", url: "https://www.youtube.com/watch?v=BSPnVpbPpho" }
+        ],
+        practice: "Agente en n8n con memoria, herramientas (buscar, escribir, calcular) y trigger por chat.",
+        goal: "Agente conversacional con acciones reales."
+      },
+      { id: "7-4", title: "Multi-agentes: coordinación y orquestación", type: "avanzado", time: 120,
+        resources: [
+          { type: "blog", label: "Multi-Agent Patterns 2025 – Anthropic", url: "https://www.anthropic.com/research/building-effective-agents" },
+          { type: "video", label: "CrewAI Tutorial", url: "https://www.youtube.com/watch?v=sPzc6hMg7So" }
+        ],
+        practice: "Crear sistema de 2 agentes: uno recopila datos, otro los analiza y genera informe.",
+        goal: "Dividir tareas complejas entre agentes especializados."
+      },
+    ],
+    project: { title: "Agente Administrativo Autónomo", desc: "Agente que recibe solicitudes por chat/email, puede consultar bases de datos, generar documentos, agendar reuniones y enviar comunicaciones sin intervención humana.", tech: ["n8n AI Agent", "Claude/OpenAI", "Google Workspace", "Airtable"] }
+  },
+  {
+    id: 8, icon: "ti-database", color: "tag-red",
+    title: "RAG, Memoria y Conocimiento",
+    hours: 15, level: "Avanzado",
+    desc: "Conectar IA a tus propios datos, documentos y bases de conocimiento.",
+    units: [
+      { id: "8-1", title: "RAG: Retrieval Augmented Generation", type: "obligatorio", time: 120,
+        resources: [
+          { type: "video", label: "RAG desde cero – LangChain", url: "https://www.youtube.com/watch?v=tcqEUSNCn8I" },
+          { type: "blog", label: "RAG explicado – Towards Data Science", url: "https://towardsdatascience.com/retrieval-augmented-generation-rag-from-theory-to-langchain-implementation-4e9bd5f6a4f2" }
+        ],
+        practice: "RAG básico: subir tus documentos a un sistema y hacer preguntas sobre ellos.",
+        goal: "IA que responde basándose en tus documentos propios."
+      },
+      { id: "8-2", title: "Embeddings y bases de datos vectoriales", type: "obligatorio", time: 120,
+        resources: [
+          { type: "video", label: "Vector DBs explained – Fireship", url: "https://www.youtube.com/watch?v=klTvEwg3oJ4" },
+          { type: "doc", label: "Pinecone Getting Started", url: "https://docs.pinecone.io/guides/get-started/quickstart" }
+        ],
+        practice: "Crear un índice en Pinecone (gratuito) con documentos propios.",
+        goal: "Búsqueda semántica en documentos y datos."
+      },
+      { id: "8-3", title: "RAG con n8n: flujo completo", type: "obligatorio", time: 120,
+        resources: [
+          { type: "doc", label: "n8n Vector Store Nodes", url: "https://docs.n8n.io/advanced-ai/rag-in-n8n/" }
+        ],
+        practice: "Workflow n8n: PDF → embed → Pinecone → query → respuesta contextualizada.",
+        goal: "Pipeline RAG completo sin código."
+      },
+      { id: "8-4", title: "Memoria en agentes: corto y largo plazo", type: "opcional", time: 90,
+        resources: [
+          { type: "blog", label: "Types of Memory in AI Agents – Lilian Weng", url: "https://lilianweng.github.io/posts/2023-06-23-agent/" }
+        ],
+        practice: "Agente que recuerda conversaciones anteriores y preferencias del usuario.",
+        goal: "Asistentes personalizados con contexto persistente."
+      },
+    ],
+    project: { title: "Base de Conocimiento Empresarial con IA", desc: "Sistema RAG sobre documentos internos (manuales, procedimientos, reglamentos). Cualquier empleado puede preguntar en lenguaje natural y obtener respuestas precisas.", tech: ["n8n", "Pinecone o Supabase", "OpenAI Embeddings", "Claude", "Google Drive"] }
+  },
+  {
+    id: 9, icon: "ti-chart-dots-3", color: "tag-green",
+    title: "Proyectos Integradores Finales",
+    hours: 30, level: "Avanzado",
+    desc: "Proyectos reales y completos para consolidar todo lo aprendido.",
+    units: [
+      { id: "9-1", title: "Sistema de análisis financiero automático", type: "obligatorio", time: 300,
+        resources: [{ type: "doc", label: "Google Sheets API", url: "https://developers.google.com/sheets/api" }],
+        practice: "Desarrollar el proyecto completo siguiendo el roadmap de implementación.",
+        goal: "Sistema funcional en producción."
+      },
+      { id: "9-2", title: "Agente asistente para tu trabajo real", type: "obligatorio", time: 300,
+        resources: [{ type: "doc", label: "n8n AI Agent Docs", url: "https://docs.n8n.io/advanced-ai/" }],
+        practice: "Agente personalizado para tu área laboral específica.",
+        goal: "Asistente IA que te ahorra horas semanales."
+      },
+      { id: "9-3", title: "Dashboard con métricas IA", type: "opcional", time: 240,
+        resources: [{ type: "doc", label: "Looker Studio Docs", url: "https://support.google.com/looker-studio" }],
+        practice: "Dashboard que muestra KPIs enriquecidos con análisis IA.",
+        goal: "Visualización de datos inteligente."
+      },
+    ],
+    project: null
+  }
+];
+
+const FINAL_PROJECTS = [
+  {
+    id: "fp1", icon: "ti-file-spreadsheet", difficulty: "Medio", color: "tag-blue",
+    title: "Automatización de Reportes Contables",
+    desc: "Pipeline que extrae datos de múltiples fuentes, genera análisis con IA y envía reportes PDF por email.",
+    tech: ["Make.com", "Google Sheets", "OpenAI API", "PDF.co", "Gmail"],
+    phases: ["Diseño del flujo de datos", "Setup de fuentes (Sheets, Drive)", "Integración IA para análisis", "Generación de PDF con template", "Email automático a stakeholders", "Tests y monitoreo"],
+    outcome: "Reportes mensuales/semanales generados sin intervención manual.",
+    value: "Ahorro de 4-6 horas semanales en reportes."
+  },
+  {
+    id: "fp2", icon: "ti-robot", difficulty: "Avanzado", color: "tag-purple",
+    title: "Agente IA para Gestión Administrativa",
+    desc: "Agente autónomo que procesa consultas, accede a bases de datos, crea documentos y coordina tareas.",
+    tech: ["n8n", "Claude API", "Google Workspace", "Airtable", "Telegram Bot"],
+    phases: ["Definir herramientas del agente", "Configurar memoria y contexto", "Conectar Google Workspace", "Integrar Airtable como BD", "Canal de entrada (Telegram/email)", "Testing con casos reales"],
+    outcome: "Asistente operativo que maneja consultas y tareas sin supervisión.",
+    value: "Capacidad de atención 24/7 sin costo de personal adicional."
+  },
+  {
+    id: "fp3", icon: "ti-database", difficulty: "Avanzado", color: "tag-amber",
+    title: "Base de Conocimiento Inteligente",
+    desc: "Sistema RAG sobre documentos internos de la empresa para consultas en lenguaje natural.",
+    tech: ["n8n", "Pinecone", "OpenAI Embeddings", "Claude", "Google Drive"],
+    phases: ["Recopilación y limpieza de documentos", "Setup de Pinecone", "Pipeline de ingestión (Drive → Embed → Pinecone)", "Interface de consulta", "Mejora de prompts para accuracy", "Monitoreo de calidad"],
+    outcome: "Cualquier usuario puede consultar documentos internos en segundos.",
+    value: "Democratiza el conocimiento organizacional."
+  },
+  {
+    id: "fp4", icon: "ti-mail-forward", difficulty: "Inicial-Medio", color: "tag-green",
+    title: "Sistema Automático de Comunicaciones",
+    desc: "Flujo que clasifica emails entrantes, genera respuestas con IA y gestiona follow-ups automáticamente.",
+    tech: ["Make.com", "Gmail API", "Claude/GPT", "Google Sheets", "Slack/Telegram"],
+    phases: ["Configurar trigger de Gmail", "Clasificación con IA (urgente/normal/spam)", "Templates de respuesta por categoría", "Sistema de follow-up con timer", "Dashboard de seguimiento en Sheets", "Alertas en Slack"],
+    outcome: "Inbox zero automatizado con respuestas personalizadas.",
+    value: "Reducción del tiempo en gestión de correo en un 70%."
+  }
+];
+
+const RESOURCE_ICONS = {
+  video: { icon: "ti-brand-youtube", label: "Video", color: "#ef4444" },
+  doc: { icon: "ti-file-text", label: "Docs", color: "#60a5fa" },
+  blog: { icon: "ti-article", label: "Blog", color: "#a78bfa" },
+  github: { icon: "ti-brand-github", label: "GitHub", color: "#e8eaf0" },
+  interactive: { icon: "ti-device-laptop", label: "Interactivo", color: "#fbbf24" }
+};
+
+function useProgress() {
+  const [completed, setCompleted] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('ia_pro_completed') || '{}'); } catch { return {}; }
+  });
+  const [notes, setNotes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('ia_pro_notes') || '{}'); } catch { return {}; }
+  });
+  const [favorites, setFavorites] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('ia_pro_favorites') || '[]')); } catch { return new Set(); }
+  });
+
+  const toggle = useCallback((id) => {
+    setCompleted(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      try { localStorage.setItem('ia_pro_completed', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  const saveNote = useCallback((id, text) => {
+    setNotes(prev => {
+      const next = { ...prev, [id]: text };
+      try { localStorage.setItem('ia_pro_notes', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }, []);
+
+  const toggleFav = useCallback((id) => {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      try { localStorage.setItem('ia_pro_favorites', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }, []);
+
+  const totalUnits = MODULES.reduce((a, m) => a + m.units.length, 0);
+  const doneUnits = Object.values(completed).filter(Boolean).length;
+  const pct = Math.round((doneUnits / totalUnits) * 100);
+  const totalHours = MODULES.reduce((a, m) => a + m.hours, 0);
+  const doneHours = MODULES.reduce((a, m) => a + m.units.reduce((b, u) => b + (completed[u.id] ? Math.round(u.time/60) : 0), 0), 0);
+
+  return { completed, toggle, notes, saveNote, favorites, toggleFav, pct, totalUnits, doneUnits, totalHours, doneHours };
+}
+
+function Sidebar({ activeModule, setActiveModule, activeView, setActiveView, completed, pct }) {
+  const navItems = [
+    { id: 'dashboard', icon: 'ti-layout-dashboard', label: 'Dashboard' },
+    { id: 'projects', icon: 'ti-rocket', label: 'Proyectos Finales' },
+    { id: 'resources', icon: 'ti-bookmark', label: 'Recursos Rápidos' },
+  ];
+
+  return (
+    <aside style={{ width: 'var(--sidebar)', background: 'var(--bg2)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0, flexShrink: 0 }}>
+      <div style={{ padding: '20px 16px 16px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{ width: 28, height: 28, background: 'var(--accent3)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <i className="ti ti-brain" style={{ fontSize: 15, color: '#000' }}></i>
+          </div>
+          <span style={{ fontWeight: 700, fontSize: 14, fontFamily: 'var(--serif)', letterSpacing: '-0.02em' }}>IA Pro 2026</span>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 6 }}>Progreso total · {pct}%</div>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: `${pct}%` }}></div>
+        </div>
+      </div>
+
+      <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
+        {navItems.map(item => (
+          <button key={item.id} onClick={() => setActiveView(item.id)}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', borderRadius: 8, marginBottom: 2, color: activeView === item.id ? 'var(--accent)' : 'var(--text2)', background: activeView === item.id ? 'rgba(110,231,183,0.08)' : 'transparent', fontSize: 13, fontWeight: 500, transition: 'all 0.15s', textAlign: 'left' }}>
+            <i className={`ti ${item.icon}`} style={{ fontSize: 16, flexShrink: 0 }} aria-hidden="true"></i>
+            {item.label}
+          </button>
+        ))}
+
+        <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '12px 8px 6px' }}>Módulos</div>
+
+        {MODULES.map(m => {
+          const done = m.units.filter(u => completed[u.id]).length;
+          const isActive = activeView === 'module' && activeModule === m.id;
+          return (
+            <button key={m.id} onClick={() => { setActiveModule(m.id); setActiveView('module'); }}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 8, marginBottom: 1, background: isActive ? 'rgba(110,231,183,0.08)' : 'transparent', color: isActive ? 'var(--text)' : 'var(--text2)', fontSize: 12.5, textAlign: 'left', transition: 'all 0.15s' }}>
+              <i className={`ti ${m.icon}`} style={{ fontSize: 15, flexShrink: 0, color: isActive ? 'var(--accent)' : 'var(--text3)' }} aria-hidden="true"></i>
+              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.id}. {m.title.split('–')[0].trim()}</span>
+              <span style={{ fontSize: 11, color: done === m.units.length && done > 0 ? 'var(--accent)' : 'var(--text3)', flexShrink: 0 }}>{done}/{m.units.length}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ fontSize: 11, color: 'var(--text3)' }}>Perfil: Contadora · Analista Programadora</div>
+      </div>
+    </aside>
+  );
+}
+
+function Dashboard({ pct, totalUnits, doneUnits, totalHours, doneHours, completed, setActiveModule, setActiveView }) {
+  const pendingModules = MODULES.filter(m => m.units.some(u => !completed[u.id]));
+  const nextModule = pendingModules[0];
+  const nextUnit = nextModule?.units.find(u => !completed[u.id]);
+  const today = new Date();
+  const dayOfWeek = today.toLocaleDateString('es-AR', { weekday: 'long' });
+
+  return (
+    <div className="fade-in" style={{ maxWidth: 780, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 4, textTransform: 'capitalize' }}>{dayOfWeek} — Tu espacio de estudio</div>
+        <h1 style={{ fontFamily: 'var(--serif)', fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--text)', lineHeight: 1.2 }}>Bienvenida a tu plataforma</h1>
+        <p style={{ color: 'var(--text2)', marginTop: 8, fontSize: 14 }}>IA aplicada · Automatización · Agentes · Productividad profesional</p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+        {[
+          { label: 'Progreso', value: `${pct}%`, sub: 'del curso', icon: 'ti-chart-pie' },
+          { label: 'Unidades', value: `${doneUnits}/${totalUnits}`, sub: 'completadas', icon: 'ti-check' },
+          { label: 'Horas', value: `${doneHours}h`, sub: `de ${totalHours}h totales`, icon: 'ti-clock' },
+          { label: 'Módulos', value: `${MODULES.filter(m=>m.units.every(u=>completed[u.id])).length}/${MODULES.length}`, sub: 'completados', icon: 'ti-award' },
+        ].map(s => (
+          <div key={s.label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 14px' }}>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4 }}>{s.label}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--mono)' }}>{s.value}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{s.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {nextUnit && (
+        <div style={{ background: 'linear-gradient(135deg, rgba(5,150,105,0.15), rgba(167,139,250,0.1))', border: '1px solid rgba(110,231,183,0.2)', borderRadius: 14, padding: '20px 24px', marginBottom: 24 }}>
+          <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.05em', marginBottom: 8 }}>▶ QUÉ ESTUDIAR HOY</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{nextUnit.title}</div>
+          <div style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 12 }}>Módulo {nextModule.id}: {nextModule.title} · ~{nextUnit.time} min</div>
+          <button className="btn-primary" onClick={() => { setActiveModule(nextModule.id); setActiveView('module'); }}>Ir al módulo →</button>
+        </div>
+      )}
+
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 14, color: 'var(--text)' }}>Progreso por módulo</h2>
+        {MODULES.map(m => {
+          const done = m.units.filter(u => completed[u.id]).length;
+          const mpct = Math.round((done / m.units.length) * 100);
+          return (
+            <div key={m.id} onClick={() => { setActiveModule(m.id); setActiveView('module'); }}
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 10, marginBottom: 4, cursor: 'pointer', transition: 'background 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'var(--bg3)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <i className={`ti ${m.icon}`} style={{ fontSize: 18, color: mpct === 100 ? 'var(--accent)' : 'var(--text3)', flexShrink: 0 }} aria-hidden="true"></i>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, color: 'var(--text)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.id}. {m.title}</div>
+                <div className="progress-bar" style={{ height: 3 }}>
+                  <div className="progress-fill" style={{ width: `${mpct}%` }}></div>
+                </div>
+              </div>
+              <span style={{ fontSize: 12, color: 'var(--text3)', fontFamily: 'var(--mono)', flexShrink: 0 }}>{done}/{m.units.length}</span>
+              <span style={{ fontSize: 11, color: mpct === 100 ? 'var(--accent)' : 'var(--text3)', fontFamily: 'var(--mono)', flexShrink: 0 }}>{mpct}%</span>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px' }}>
+        <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>📅 Calendario sugerido de estudio</h2>
+        {[
+          { day: 'Lunes / Miércoles', time: '1-2h', focus: 'Teoría y videos del módulo actual' },
+          { day: 'Martes / Jueves', time: '1-2h', focus: 'Práctica y ejercicios hands-on' },
+          { day: 'Viernes', time: '2-3h', focus: 'Mini proyecto semanal o avance de proyecto final' },
+          { day: 'Sábado', time: '1h', focus: 'Revisión de notas y repaso espaciado' },
+        ].map(r => (
+          <div key={r.day} style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ width: 160, fontSize: 12, fontWeight: 500, color: 'var(--accent)', flexShrink: 0 }}>{r.day}</div>
+            <div style={{ fontSize: 11, color: 'var(--text3)', width: 35, flexShrink: 0 }}>{r.time}</div>
+            <div style={{ fontSize: 12, color: 'var(--text2)' }}>{r.focus}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ModuleView({ module, completed, toggle, notes, saveNote, favorites, toggleFav }) {
+  const [openUnit, setOpenUnit] = useState(null);
+  const [activeTab, setActiveTab] = useState('units');
+  const done = module.units.filter(u => completed[u.id]).length;
+  const mpct = Math.round((done / module.units.length) * 100);
+  const typeLabel = { obligatorio: 'Obligatorio', opcional: 'Opcional', avanzado: 'Avanzado Extra' };
+  const typeColor = { obligatorio: 'tag-green', opcional: 'tag-gray', avanzado: 'tag-amber' };
+
+  return (
+    <div className="fade-in" style={{ maxWidth: 780, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+          <span className={`tag ${module.color}`}><i className={`ti ${module.icon}`}></i> Módulo {module.id}</span>
+          <span className="tag tag-gray">{module.level}</span>
+          <span className="tag tag-gray"><i className="ti ti-clock"></i> {module.hours}h estimadas</span>
+          <span className="tag tag-green">{done}/{module.units.length} unidades</span>
+        </div>
+        <h1 style={{ fontFamily: 'var(--serif)', fontSize: 24, fontWeight: 600, letterSpacing: '-0.02em', marginBottom: 8 }}>{module.title}</h1>
+        <p style={{ color: 'var(--text2)', fontSize: 14 }}>{module.desc}</p>
+        <div style={{ marginTop: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 12, color: 'var(--text3)' }}>
+            <span>Progreso del módulo</span><span style={{ fontFamily: 'var(--mono)' }}>{mpct}%</span>
+          </div>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${mpct}%` }}></div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: '1px solid var(--border)' }}>
+        {['units', 'practice', 'project'].map(tab => (
+          <button key={tab} onClick={() => setActiveTab(tab)}
+            style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: activeTab === tab ? 'var(--accent)' : 'var(--text3)', borderBottom: activeTab === tab ? '2px solid var(--accent)' : '2px solid transparent', marginBottom: -1, transition: 'all 0.15s' }}>
+            {{ units: 'Unidades', practice: 'Práctica', project: 'Proyecto' }[tab]}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'units' && (
+        <div>
+          {module.units.map((unit, idx) => {
+            const isOpen = openUnit === unit.id;
+            const isDone = completed[unit.id];
+            const isFav = favorites.has(unit.id);
+            return (
+              <div key={unit.id} style={{ background: 'var(--bg2)', border: `1px solid ${isOpen ? 'rgba(110,231,183,0.25)' : 'var(--border)'}`, borderRadius: 12, marginBottom: 8, overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', cursor: 'pointer' }}
+                  onClick={() => setOpenUnit(isOpen ? null : unit.id)}>
+                  <div className={`checkbox ${isDone ? 'done' : ''}`} onClick={e => { e.stopPropagation(); toggle(unit.id); }}></div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 500, color: isDone ? 'var(--text3)' : 'var(--text)', textDecoration: isDone ? 'line-through' : 'none' }}>
+                      {idx + 1}. {unit.title}
+                    </div>
+                    <div style={{ display: 'flex', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+                      <span className={`tag ${typeColor[unit.type]}`}>{typeLabel[unit.type]}</span>
+                      <span className="tag tag-gray"><i className="ti ti-clock"></i> {unit.time} min</span>
+                    </div>
+                  </div>
+                  <button onClick={e => { e.stopPropagation(); toggleFav(unit.id); }} style={{ color: isFav ? 'var(--amber)' : 'var(--text3)', fontSize: 16, padding: 4 }}>
+                    <i className={`ti ${isFav ? 'ti-star-filled' : 'ti-star'}`}></i>
+                  </button>
+                  <i className={`ti ${isOpen ? 'ti-chevron-up' : 'ti-chevron-down'}`} style={{ fontSize: 16, color: 'var(--text3)' }}></i>
+                </div>
+
+                {isOpen && (
+                  <div style={{ borderTop: '1px solid var(--border)', padding: '16px' }}>
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 8 }}>OBJETIVO</div>
+                      <p style={{ fontSize: 13, color: 'var(--text2)', background: 'var(--bg3)', padding: '10px 12px', borderRadius: 8, borderLeft: '2px solid var(--accent3)' }}>{unit.goal}</p>
+                    </div>
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 8 }}>RECURSOS</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {unit.resources.map((r, i) => {
+                          const ri = RESOURCE_ICONS[r.type] || RESOURCE_ICONS.doc;
+                          return (
+                            <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
+                              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--bg3)', borderRadius: 8, border: '1px solid var(--border)', textDecoration: 'none', color: 'inherit' }}>
+                              <i className={`ti ${ri.icon}`} style={{ fontSize: 15, color: ri.color, flexShrink: 0 }}></i>
+                              <span style={{ fontSize: 13, color: 'var(--text)' }}>{r.label}</span>
+                              <i className="ti ti-external-link" style={{ fontSize: 13, color: 'var(--text3)', marginLeft: 'auto' }}></i>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 8 }}>PRÁCTICA</div>
+                      <div style={{ fontSize: 13, color: 'var(--text2)', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.15)', padding: '10px 12px', borderRadius: 8 }}>
+                        <i className="ti ti-flask" style={{ marginRight: 6, color: 'var(--purple)' }}></i>{unit.practice}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 6 }}>NOTAS PERSONALES</div>
+                      <textarea
+                        value={notes[unit.id] || ''}
+                        onChange={e => saveNote(unit.id, e.target.value)}
+                        placeholder="Escribe tus notas, preguntas o reflexiones aquí..."
+                        style={{ width: '100%', minHeight: 80, background: 'var(--bg4)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 10px', fontSize: 12.5, color: 'var(--text)', resize: 'vertical', outline: 'none', fontFamily: 'var(--font)' }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === 'practice' && (
+        <div>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>Ejercicios del módulo</h3>
+            {module.units.map((u, i) => (
+              <div key={u.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
+                <div style={{ fontSize: 12, color: 'var(--accent)', marginBottom: 3, fontWeight: 500 }}>Ejercicio {i+1} · {u.title}</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)' }}>{u.practice}</div>
+                <div style={{ marginTop: 6 }}>
+                  <span className="tag tag-gray"><i className="ti ti-clock"></i> ~{u.time} min</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.15)', borderRadius: 12, padding: 20 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--amber)', marginBottom: 8 }}>💡 Consejo para tu perfil</h3>
+            <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>Como contadora con experiencia en lógica de negocio, aplicá cada ejercicio a un caso real de tu trabajo. La mejor práctica es resolver un problema tuyo real con la herramienta del módulo.</p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'project' && module.project && (
+        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <span className="tag tag-purple">Mini Proyecto</span>
+            <span className="tag tag-gray">Módulo {module.id}</span>
+          </div>
+          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{module.project.title}</h3>
+          <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 16 }}>{module.project.desc}</p>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 8 }}>TECNOLOGÍAS</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {module.project.tech.map(t => <span key={t} className="tag tag-gray">{t}</span>)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProjectsView() {
+  const [selected, setSelected] = useState(null);
+  const diffColor = { 'Inicial-Medio': 'tag-green', 'Medio': 'tag-blue', 'Avanzado': 'tag-red' };
+
+  return (
+    <div className="fade-in" style={{ maxWidth: 780, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontFamily: 'var(--serif)', fontSize: 24, fontWeight: 600, letterSpacing: '-0.02em', marginBottom: 8 }}>Proyectos Integradores</h1>
+        <p style={{ color: 'var(--text2)', fontSize: 14 }}>Proyectos reales end-to-end para consolidar todo el aprendizaje.</p>
+      </div>
+
+      {!selected ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          {FINAL_PROJECTS.map(p => (
+            <div key={p.id} className="card" onClick={() => setSelected(p)} style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(110,231,183,0.3)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                <span className={`tag ${p.color}`}><i className={`ti ${p.icon}`}></i></span>
+                <span className={`tag ${diffColor[p.difficulty] || 'tag-gray'}`}>{p.difficulty}</span>
+              </div>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>{p.title}</h3>
+              <p style={{ fontSize: 12.5, color: 'var(--text2)', lineHeight: 1.6 }}>{p.desc}</p>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
+                {p.tech.slice(0,3).map(t => <span key={t} className="tag tag-gray" style={{ fontSize: 11 }}>{t}</span>)}
+                {p.tech.length > 3 && <span className="tag tag-gray" style={{ fontSize: 11 }}>+{p.tech.length-3}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div>
+          <button className="btn-ghost" onClick={() => setSelected(null)} style={{ marginBottom: 20 }}>
+            <i className="ti ti-arrow-left"></i> Volver a proyectos
+          </button>
+          <div className="card">
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+              <span className={`tag ${selected.color}`}><i className={`ti ${selected.icon}`}></i> Proyecto Final</span>
+              <span className={`tag ${diffColor[selected.difficulty] || 'tag-gray'}`}>{selected.difficulty}</span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--serif)', fontSize: 20, fontWeight: 600, marginBottom: 8 }}>{selected.title}</h2>
+            <p style={{ fontSize: 13.5, color: 'var(--text2)', marginBottom: 20, lineHeight: 1.6 }}>{selected.desc}</p>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 10 }}>TECNOLOGÍAS</div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {selected.tech.map(t => <span key={t} className="tag tag-gray">{t}</span>)}
+              </div>
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.06em', marginBottom: 10 }}>FASES DE IMPLEMENTACIÓN</div>
+              {selected.phases.map((phase, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+                  <div style={{ width: 22, height: 22, background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--accent)', fontFamily: 'var(--mono)', flexShrink: 0 }}>{i+1}</div>
+                  <span style={{ fontSize: 13, color: 'var(--text2)', paddingTop: 2 }}>{phase}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ background: 'rgba(110,231,183,0.06)', border: '1px solid rgba(110,231,183,0.15)', borderRadius: 10, padding: '12px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent)', marginBottom: 4 }}>RESULTADO ESPERADO</div>
+                <p style={{ fontSize: 12.5, color: 'var(--text2)' }}>{selected.outcome}</p>
+              </div>
+              <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.15)', borderRadius: 10, padding: '12px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--amber)', marginBottom: 4 }}>VALOR PROFESIONAL</div>
+                <p style={{ fontSize: 12.5, color: 'var(--text2)' }}>{selected.value}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ResourcesView({ favorites, completed }) {
+  const favUnits = MODULES.flatMap(m => m.units.filter(u => favorites.has(u.id)).map(u => ({ ...u, moduleName: m.title, moduleId: m.id })));
+  const allResources = [
+    { cat: "Prompting", links: [
+      { label: "Prompt Engineering Guide", url: "https://www.promptingguide.ai/es", type: "doc" },
+      { label: "Anthropic Cookbook", url: "https://github.com/anthropics/anthropic-cookbook", type: "github" },
+      { label: "OpenAI Prompting Best Practices", url: "https://platform.openai.com/docs/guides/prompt-engineering", type: "doc" },
+    ]},
+    { cat: "Automatización", links: [
+      { label: "Make Academy (Gratis)", url: "https://academy.make.com", type: "interactive" },
+      { label: "n8n Docs", url: "https://docs.n8n.io", type: "doc" },
+      { label: "n8n Community Templates", url: "https://n8n.io/workflows/", type: "interactive" },
+    ]},
+    { cat: "APIs & Dev", links: [
+      { label: "Postman Learning Center", url: "https://learning.postman.com", type: "interactive" },
+      { label: "OpenAI API Reference", url: "https://platform.openai.com/docs/api-reference", type: "doc" },
+      { label: "Anthropic API Docs", url: "https://docs.anthropic.com", type: "doc" },
+    ]},
+    { cat: "Agentes IA", links: [
+      { label: "Building Effective Agents – Anthropic", url: "https://www.anthropic.com/research/building-effective-agents", type: "blog" },
+      { label: "LangChain Docs", url: "https://python.langchain.com/docs", type: "doc" },
+      { label: "CrewAI Docs", url: "https://docs.crewai.com", type: "doc" },
+    ]},
+  ];
+
+  return (
+    <div className="fade-in" style={{ maxWidth: 780, margin: '0 auto', padding: '32px 24px' }}>
+      <h1 style={{ fontFamily: 'var(--serif)', fontSize: 24, fontWeight: 600, letterSpacing: '-0.02em', marginBottom: 8 }}>Recursos Rápidos</h1>
+      <p style={{ color: 'var(--text2)', fontSize: 14, marginBottom: 28 }}>Links esenciales organizados por categoría.</p>
+      {favUnits.length > 0 && (
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--amber)', letterSpacing: '0.06em', marginBottom: 10 }}>⭐ FAVORITOS</div>
+          {favUnits.map(u => (
+            <div key={u.id} style={{ padding: '8px 12px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 8, marginBottom: 6, fontSize: 13 }}>
+              <span style={{ color: 'var(--text3)', fontSize: 11 }}>Módulo {u.moduleId} · </span>
+              <span style={{ color: 'var(--text)' }}>{u.title}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {allResources.map(cat => (
+          <div key={cat.cat} className="card">
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.05em', marginBottom: 12 }}>{cat.cat.toUpperCase()}</div>
+            {cat.links.map((l, i) => {
+              const ri = RESOURCE_ICONS[l.type] || RESOURCE_ICONS.doc;
+              return (
+                <a key={i} href={l.url} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: i < cat.links.length-1 ? '1px solid var(--border)' : 'none', textDecoration: 'none', color: 'var(--text2)', fontSize: 13 }}>
+                  <i className={`ti ${ri.icon}`} style={{ fontSize: 14, color: ri.color, flexShrink: 0 }}></i>
+                  {l.label}
+                  <i className="ti ti-external-link" style={{ fontSize: 12, marginLeft: 'auto', color: 'var(--text3)' }}></i>
+                </a>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [activeView, setActiveView] = useState('dashboard');
+  const [activeModule, setActiveModule] = useState(1);
+  const { completed, toggle, notes, saveNote, favorites, toggleFav, pct, totalUnits, doneUnits, totalHours, doneHours } = useProgress();
+  const currentModule = MODULES.find(m => m.id === activeModule);
+
+  return (
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <Sidebar activeModule={activeModule} setActiveModule={setActiveModule} activeView={activeView} setActiveView={setActiveView} completed={completed} pct={pct} />
+      <main style={{ flex: 1, overflowY: 'auto', background: 'var(--bg)' }}>
+        {activeView === 'dashboard' && <Dashboard pct={pct} totalUnits={totalUnits} doneUnits={doneUnits} totalHours={totalHours} doneHours={doneHours} completed={completed} setActiveModule={setActiveModule} setActiveView={setActiveView} />}
+        {activeView === 'module' && currentModule && <ModuleView module={currentModule} completed={completed} toggle={toggle} notes={notes} saveNote={saveNote} favorites={favorites} toggleFav={toggleFav} />}
+        {activeView === 'projects' && <ProjectsView />}
+        {activeView === 'resources' && <ResourcesView favorites={favorites} completed={completed} />}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
