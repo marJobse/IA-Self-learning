@@ -95,7 +95,6 @@ IA-Self-learning/
 │
 ├── index.html
 ├── README.md
-└── assets/ (opcional)
 ```
 
 ---
@@ -203,11 +202,7 @@ Actualmente es un proyecto personal de exploración y aprendizaje.
 
 Las ideas, mejoras y sugerencias son bienvenidas.
 
----
 
-# 📜 Licencia
-
-MIT License
 
 ---
 
